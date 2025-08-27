@@ -1,0 +1,17 @@
+---
+- name: Import MariaDB dump to RDS
+  hosts: localhost
+  tasks:
+    - name: Copy database dump file to remote host
+      copy:
+        src: /home/ubuntu/ansible/greenshop_dump.sql
+        dest: /tmp/dump.sql
+
+    - name: Import database dump to RDS
+      community.mysql.mysql_db:
+        name: greenshop
+        state: import
+        target: /tmp/dump.sql
+        login_host: your-rds-endpoint
+        login_user: greenshop_user
+        login_password: your_secure_password

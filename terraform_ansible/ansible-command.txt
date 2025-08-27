@@ -1,0 +1,6 @@
+ansible-playbook -i /home/ubuntu/ansible/aws_ec2.yml /home/ubuntu/ansible/docker.yml --private-key=/home/ubuntu/.ssh/connexion.pem --ssh-extra-args="-o StrictHostKeyChecking=no"
+#changer le login host sur le fichier database.yml et dans le fichier db.php par la base de données 
+sudo nano ansible/greenshop/db.php
+sudo nano database.yml
+ansible-playbook -i /home/ubuntu/ansible/aws_ec2.yml /home/ubuntu/ansible/apache-php.yml --private-key=/home/ubuntu/.ssh/connexion.pem --ssh-extra-args="-o StrictHostKeyChecking=no"
+ansible-playbook -i localhost database.yml

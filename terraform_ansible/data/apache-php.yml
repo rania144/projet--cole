@@ -1,0 +1,79 @@
+---
+- name: Installer un serveur Apache, PHP
+  hosts: all
+  become: yes
+
+  vars:
+    php_packages:
+      - php
+      - libapache2-mod-php
+      - php-mysql
+      - php-pdo
+
+  tasks:
+
+    - name: Mettre à jour les paquets APT
+      apt:
+        update_cache: yes
+
+    - name: Installer Apache
+      apt:
+        name: apache2
+        state: present
+
+    - name: Installer PHP et extensions
+      apt:
+        name: "{{ php_packages }}"
+        state: present
+
+    - name: Supprimer le VirtualHost par défaut d'Apache
+      file:
+        path: /etc/apache2/sites-enabled/000-default.conf
+        state: absent
+
+    - name: Démarrer et activer Apache
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Copier le dossier greenshop
+      copy:
+        src: /home/ubuntu/ansible/greenshop/
+        dest: /var/www/greenshop
+        owner: www-data
+        group: www-data
+        mode: '0755'
+        directory_mode: yes
+
+    - name: Définir les permissions, le propriétaire et le groupe de manière récursive
+      file:
+        path: /var/www/
+        state: directory
+        mode: '0755'  
+        recurse: yes  
+
+    - name: Copier le fichier apache2.conf
+      copy:
+        src: /home/ubuntu/ansible/apache2.conf
+        dest: /etc/apache2/apache2.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copier le fichier greenshop.conf
+      copy:
+        src: /home/ubuntu/ansible/greenshop.conf
+        dest: /etc/apache2/sites-available/greenshop.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+
+    - name: Activer le site greenshop
+      command: a2ensite greenshop.conf
+
+    - name: Redémarrer Apache
+      service:
+        name: apache2
+        state: restarted
