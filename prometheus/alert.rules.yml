@@ -1,0 +1,39 @@
+groups:
+  - name: container.rules
+    rules:
+      - alert: HighCPUUsage
+        expr: rate(container_cpu_usage_seconds_total[5m]) > 0.8
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU usage high on container {{ $labels.container_label_com_docker_swarm_service_name }}"
+          description: "CPU usage is > 80% for more than 2 minutes."
+
+      - alert: HighMemoryUsage
+        expr: container_memory_usage_bytes > 500 * 1024 * 1024
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memory usage high on container {{ $labels.container_label_com_docker_swarm_service_name }}"
+          description: "Memory usage is > 500MB for more than 2 minutes."
+
+      - alert: InstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance {{ $labels.instance }} down"
+          description: "No metrics received from instance for more than 1 minute."
+
+      - alert: HighHttpErrors
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High HTTP 5xx errors"
+          description: "More than 5 HTTP 5xx errors in 5 minutes."
+
