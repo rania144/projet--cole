@@ -68,14 +68,20 @@ services:
       - monitoring
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
+  image: gcr.io/cadvisor/cadvisor:latest   # Image officielle cAdvisor
+  volumes:
+    - /:/rootfs:ro             # Accès en lecture seule au système
+    - /var/run:/var/run:ro     # Accès aux sockets système
+    - /sys:/sys:ro             # Accès aux infos du kernel
+    - /var/lib/docker/:/var/lib/docker:ro   # Accès aux conteneurs Docker
+  ports:
+    - "8081:8080"   # Expose le port 8081 (interface web cAdvisor)
+  networks:
+    - monitoring    # Fait partie du réseau "monitoring"
+
     ports:
       - "8081:8080"
     networks:
       - monitoring
+
 
